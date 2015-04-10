@@ -79,11 +79,7 @@ with open(test_file, 'r') as test_fh:
 
         print 'first pass to compute distances'
         dists = []
-        i = 0
         for row in test_csv:
-            i += 1
-            if i >= 11:
-                break
             id     = row[0]
             user   = row[1]
             artist = row[2]
@@ -101,11 +97,7 @@ with open(test_file, 'r') as test_fh:
         dists = [x - mn for x in dists]
         
         print 'writing out test predictions'
-        i = 0
         for row in test_csv:
-            i += 1
-            if i >= 11:
-                break
             id     = int(row[0])
             user   = row[1]
             artist = row[2]
