@@ -70,6 +70,25 @@ with open(test_file, 'r') as test_fh:
     test_csv = csv.reader(test_fh, delimiter=',', quotechar='"')
     next(test_csv, None)
 
+    print 'first pass to compute distances'
+    dists = []
+    for row in test_csv:
+        id     = row[0]
+        user   = row[1]
+        artist = row[2]
+
+        # make predictions
+        profile = train_data[user]
+        tot = 0.
+        for a in profile:
+            tot += profile[a]*compare(art_feat.loc[a], art_feat.loc[artist])
+        tot /= float(sum(profile.values()))
+        dists.append(tot)
+
+with open(test_file, 'r') as test_fh:
+    test_csv = csv.reader(test_fh, delimiter=',', quotechar='"')
+    next(test_csv, None)
+
     with open(soln_file, 'w') as soln_fh:
         soln_csv = csv.writer(soln_fh,
                               delimiter=',',
@@ -77,21 +96,6 @@ with open(test_file, 'r') as test_fh:
                               quoting=csv.QUOTE_MINIMAL)
         soln_csv.writerow(['Id', 'plays'])
 
-        print 'first pass to compute distances'
-        dists = []
-        for row in test_csv:
-            id     = row[0]
-            user   = row[1]
-            artist = row[2]
-
-            # make predictions
-            profile = train_data[user]
-            tot = 0.
-            for a in profile:
-                tot += profile[a]*compare(art_feat.loc[a], art_feat.loc[artist])
-            tot /= float(sum(profile.values()))
-            dists.append(tot)
-        
         print 'making distances zero-mean'
         mn = np.mean(dists)
         dists = [x - mn for x in dists]
@@ -108,4 +112,3 @@ with open(test_file, 'r') as test_fh:
             else:
                 print "User", id, "not in training data."
                 soln_csv.writerow([id, global_median])
-                
